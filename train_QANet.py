@@ -12,7 +12,7 @@ from ExponentialMovingAverage import *
 import tensorflow as tf
 from keras.callbacks import Callback
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
 # load trainset
 context_word = np.load('dataset/train_contw_input.npy')
@@ -61,7 +61,8 @@ np.random.seed(10000)
 model = QANet.QANet(word_dim=300, char_dim=char_dim, cont_limit=cont_limit, ques_limit=ques_limit,
                     char_limit=char_limit, word_mat=word_mat, char_mat=char_mat, char_input_size=char_input_size,
                     filters=128, num_head=8, dropout=0.1)
-# model=multi_gpu_model(model,gpus=2)
+
+model=multi_gpu_model(model,gpus=2)
 optimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.999, epsilon=1e-7, clipnorm=5.)
 model.compile(optimizer=optimizer, loss=['categorical_crossentropy', 'categorical_crossentropy', 'mae', 'mae'], \
               loss_weights=[1, 1, 0, 0])
