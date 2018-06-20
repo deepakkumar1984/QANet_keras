@@ -12,37 +12,37 @@ from ExponentialMovingAverage import *
 import tensorflow as tf
 from keras.callbacks import Callback
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+#os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 # load trainset
-context_word = np.load('dataset/train_contw_input.npy')
-question_word = np.load('dataset/train_quesw_input.npy')
-context_char = np.load('dataset/train_contc_input.npy')
-question_char = np.load('dataset/train_quesc_input.npy')
-start_label = np.load('dataset/train_y_start.npy')
-end_label = np.load('dataset/train_y_end.npy')
+context_word = np.load('dataset2/train_contw_input.npy')
+question_word = np.load('dataset2/train_quesw_input.npy')
+context_char = np.load('dataset2/train_contc_input.npy')
+question_char = np.load('dataset2/train_quesc_input.npy')
+start_label = np.load('dataset2/train_y_start.npy')
+end_label = np.load('dataset2/train_y_end.npy')
 start_label_fin = np.argmax(start_label, axis=-1)
 end_label_fin = np.argmax(end_label, axis=-1)
 
 # load valset
-val_context_word = np.load('dataset/test_contw_input.npy')
-val_question_word = np.load('dataset/test_quesw_input.npy')
-val_context_char = np.load('dataset/test_contc_input.npy')
-val_question_char = np.load('dataset/test_quesc_input.npy')
-val_start_label = np.load('dataset/test_y_start.npy')
-val_end_label = np.load('dataset/test_y_end.npy')
+val_context_word = np.load('dataset2/test_contw_input.npy')
+val_question_word = np.load('dataset2/test_quesw_input.npy')
+val_context_char = np.load('dataset2/test_contc_input.npy')
+val_question_char = np.load('dataset2/test_quesc_input.npy')
+val_start_label = np.load('dataset2/test_y_start.npy')
+val_end_label = np.load('dataset2/test_y_end.npy')
 val_start_label_fin = np.argmax(val_start_label, axis=-1)
 val_end_label_fin = np.argmax(val_end_label, axis=-1)
-val_qid = np.load('dataset/test_qid.npy').astype(np.int32)
-with open('dataset/test_eval.json', "r") as fh:
+val_qid = np.load('dataset2/test_qid.npy').astype(np.int32)
+with open('dataset2/test_eval.json', "r") as fh:
     eval_file = json.load(fh)
 
 # load embedding matrix
-word_mat = np.load('dataset/word_emb_mat3.npy')
-char_mat = np.load('dataset/char_emb_mat3.npy')
+word_mat = np.load('word_emb_mat2.npy')
+char_mat = np.load('char_emb_mat2.npy')
 
 # parameters
-char_dim = 64
+char_dim = 200
 cont_limit = 400
 ques_limit = 50
 char_limit = 16
@@ -62,7 +62,7 @@ model = QANet.QANet(word_dim=300, char_dim=char_dim, cont_limit=cont_limit, ques
                     char_limit=char_limit, word_mat=word_mat, char_mat=char_mat, char_input_size=char_input_size,
                     filters=128, num_head=8, dropout=0.1)
 
-model=multi_gpu_model(model,gpus=2)
+#model=multi_gpu_model(model,gpus=2)
 optimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.999, epsilon=1e-7, clipnorm=5.)
 model.compile(optimizer=optimizer, loss=['categorical_crossentropy', 'categorical_crossentropy', 'mae', 'mae'], \
               loss_weights=[1, 1, 0, 0])
